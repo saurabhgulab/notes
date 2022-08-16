@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
+//creation of new Schema in which the detail and type-attributes are been included.
+
 const UserSchema = new Schema({
   name: {
     type: String,
@@ -21,5 +23,4 @@ const UserSchema = new Schema({
   },
 });
 const User = mongoose.model("user", UserSchema);
-User.createIndexes();
 module.exports = User;

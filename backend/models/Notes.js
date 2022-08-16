@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
+//creation of new Schema in which the detail and type-attributes are been included.
+
 const NotesSchema = new Schema({
   title: {
     type: String,
