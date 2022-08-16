@@ -4,6 +4,10 @@ const { Schema } = mongoose;
 //creation of new Schema in which the detail and type-attributes are been included.
 
 const NotesSchema = new Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+  },
   title: {
     type: String,
     required: true,
@@ -18,8 +22,8 @@ const NotesSchema = new Schema({
   },
   date: {
     type: Date,
-    required: Date.now,
+    default: Date.now,
   },
 });
 
-model.exports = mongoose.model("notes", NotesSchema);
+module.exports = mongoose.model("notes", NotesSchema);
