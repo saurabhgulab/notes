@@ -19,17 +19,18 @@ router.post(
     }),
   ],
   async (req, res) => {
+    let success = false;
     //Return bad request on Errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ success, errors: errors.array() });
     }
     try {
       let user = await User.findOne({ email: req.body.email }); //checking duplicate email
       if (user) {
         return res
           .status(400)
-          .json({ error: "User with same email already exists" });
+          .json({ success, error: "User with same email already exists" });
       }
 
       //applying hashing to current password. Also using async-await structure
@@ -46,8 +47,8 @@ router.post(
       //payload
       const data = { user: { id: user.id } };
       const jwtData = jwt.sign(data, JWT_SECRET);
-
-      res.json({ jwtData });
+      success = true;
+      res.json({ success, jwtData });
       //   .then((user) => res.json(user))
       //   .catch((err) => {
       //     console.log(err);
@@ -63,10 +64,11 @@ router.post(
 router.post(
   "/login",
   [
-    body("email", "Invalid Credentils").isEmail(),
-    body("password", "Invalid Credentils").exists(),
+    body("email", "Enter valid email id").isEmail(),
+    body("password", "Password cannot be blank.").exists(),
   ],
   async (req, res) => {
+    let success = false;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -75,18 +77,20 @@ router.post(
     try {
       let user = await User.findOne({ email });
       if (!user) {
-        return res.status(400).json("Invalid Credentials");
+        success = false;
+        return res.status(400).json({ success, error: "Invalid Credentials" });
       }
       const passwordCompare = await bcrypt.compare(password, user.password);
       if (!passwordCompare) {
-        return res.status(400).json("Invalid Credentials");
+        success = false;
+        return res.status(400).json({ success, error: "Invalid Credentials" });
       }
 
       //payload
       const data = { user: { id: user.id } };
       const jwtData = jwt.sign(data, JWT_SECRET);
-
-      res.json({ jwtData });
+      success = true;
+      res.json({ success, jwtData });
     } catch (error) {
       console.log(error.message);
       res.status(500).send("Internal Server Error");
